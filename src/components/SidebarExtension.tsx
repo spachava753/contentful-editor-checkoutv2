@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {SidebarExtensionSDK} from "contentful-ui-extensions-sdk";
 import {Button} from "@contentful/forma-36-react-components";
 import tokens from "@contentful/forma-36-tokens";
+import _ from "lodash";
 
 interface SidebarExtensionProps {
     sdk: SidebarExtensionSDK
@@ -41,13 +42,13 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             console.log(`Currently setting initial state for ${fieldsKey}`);
             console.log(initialFieldStates[fieldsKey]);
             detachFieldHandlers.push(field.onValueChanged(value => {
-                console.log(`Detected change in ${fieldsKey}`);
+                console.log(`Detected change in field: ${fieldsKey}`);
                 console.log(`New value is ${value}`);
                 console.log(`Old value is ${initialFieldStates[fieldsKey]}`);
                 console.log(`Entry state is ${entryState}`);
                 // if we are in a readonly state, don't save any changes
-                if (entryState == EntryState.READ_ONLY && value != initialFieldStates[fieldsKey]) {
-                    console.log(`Uh oh, resetting the value!`);
+                if (entryState == EntryState.READ_ONLY && !_.isEqual(value, initialFieldStates[fieldsKey])) {
+                    console.log(`Uh oh, resetting the field ${fieldsKey}!`);
                     // noinspection JSIgnoredPromiseFromCall
                     sdk.dialogs.openAlert({
                         title: 'Warning!',
