@@ -16,6 +16,7 @@ enum EntryState {
 // TODO: properly define type later
 let initialFieldStates: any = {};
 
+
 export function SidebarExtension(props: SidebarExtensionProps) {
     const {sdk} = props;
 
@@ -23,20 +24,13 @@ export function SidebarExtension(props: SidebarExtensionProps) {
 
     useEffect(() => {
         sdk.window.startAutoResizer();
-        const notify = async () => {
-            const result = await sdk.dialogs.openExtension({
-                width: "small",
-                title: 'Warning!',
-                position: "center",
-                shouldCloseOnEscapePress: true,
-                shouldCloseOnOverlayClick: true
-            });
-            // eslint-disable-next-line no-console
-            console.log(result);
-        }
-
         // noinspection JSIgnoredPromiseFromCall
-        notify();
+        sdk.dialogs.openAlert({
+            title: 'Warning!',
+            message: "You are viewing the current entry in read only mode!",
+            shouldCloseOnEscapePress: true,
+            shouldCloseOnOverlayClick: true
+        });
     }, []);
 
     useEffect(() => {
@@ -47,10 +41,16 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             console.log(`Currently setting initial state for ${fieldsKey}`);
             console.log(initialFieldStates[fieldsKey]);
             detachFieldHandlers.push(field.onValueChanged(value => {
-                //console.log(field.getValue());
-                //console.log(value);
+                console.log(`Detected change in ${fieldsKey}`);
+                console.log(`New value is ${value}`);
                 // if we are in a readonly state, don't save any changes
                 if (entryState == EntryState.READ_ONLY && value != initialFieldStates[fieldsKey]) {
+                    sdk.dialogs.openAlert({
+                        title: 'Warning!',
+                        message: "You are viewing the current entry in read only mode!",
+                        shouldCloseOnEscapePress: true,
+                        shouldCloseOnOverlayClick: true
+                    });
                     field.setValue(initialFieldStates[field.id]);
                 }
             }));
