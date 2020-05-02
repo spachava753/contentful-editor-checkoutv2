@@ -1,0 +1,6 @@
+{
+  "id": "editor-checkoutv2",
+  "name": "editor-checkoutv2",
+  "srcdoc": "./build/index.html",
+  "sidebar": true
+}
