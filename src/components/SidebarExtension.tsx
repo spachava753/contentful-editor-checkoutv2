@@ -61,7 +61,7 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                 detachHandler();
             });
         }
-    }, []);
+    }, [entryState]);
 
     const buttonComp = [];
     if (entryState == EntryState.READ_ONLY) {
@@ -76,24 +76,26 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             Checkout
         </Button>);
     } else {
-        const onClick = () => {
-            setEntryState(EntryState.READ_ONLY);
-        }
         buttonComp.push(<Button
             key={"checkin-btn"}
             testId="checkin-btn"
             buttonType="positive"
             isFullWidth={true}
-            onClick={onClick}>
+            onClick={() => setEntryState(EntryState.READ_ONLY)}>
             Checkin changes
         </Button>);
         buttonComp.push(<Button
-            key={"checkin-btn"}
-            testId="checkin-btn"
+            key={"discard-btn"}
+            testId="discard-btn"
             style={{marginTop: tokens.spacingM}}
             buttonType="negative"
             isFullWidth={true}
-            onClick={onClick}>
+            onClick={() => {
+                for (let fieldsKey in sdk.entry.fields) {
+                    sdk.entry.fields[fieldsKey].setValue(initialFieldStates[fieldsKey]);
+                }
+                setEntryState(EntryState.READ_ONLY);
+            }}>
             Discard changes & Checkin
         </Button>);
     }
