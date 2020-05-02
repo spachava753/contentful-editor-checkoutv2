@@ -43,8 +43,12 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             detachFieldHandlers.push(field.onValueChanged(value => {
                 console.log(`Detected change in ${fieldsKey}`);
                 console.log(`New value is ${value}`);
+                console.log(`Old value is ${initialFieldStates[fieldsKey]}`);
+                console.log(`Entry state is ${entryState}`);
                 // if we are in a readonly state, don't save any changes
                 if (entryState == EntryState.READ_ONLY && value != initialFieldStates[fieldsKey]) {
+                    console.log(`Uh oh, resetting the value!`);
+                    // noinspection JSIgnoredPromiseFromCall
                     sdk.dialogs.openAlert({
                         title: 'Warning!',
                         message: "You are viewing the current entry in read only mode!",
@@ -91,10 +95,11 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             buttonType="negative"
             isFullWidth={true}
             onClick={() => {
+                const setFieldPromises = [];
                 for (let fieldsKey in sdk.entry.fields) {
-                    sdk.entry.fields[fieldsKey].setValue(initialFieldStates[fieldsKey]);
+                    setFieldPromises.push(sdk.entry.fields[fieldsKey].setValue(initialFieldStates[fieldsKey]));
                 }
-                setEntryState(EntryState.READ_ONLY);
+                Promise.all(setFieldPromises).then(() => setEntryState(EntryState.READ_ONLY));
             }}>
             Discard changes & Checkin
         </Button>);
