@@ -1,42 +1,17 @@
 import * as React from 'react';
-import { render } from 'react-dom';
-import { Button } from '@contentful/forma-36-react-components';
-import {
-  init,
-  locations,
-  DialogExtensionSDK,
-  SidebarExtensionSDK
-} from 'contentful-ui-extensions-sdk';
-import tokens from '@contentful/forma-36-tokens';
+import {render} from 'react-dom';
+import {DialogExtensionSDK, init, locations, SidebarExtensionSDK} from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 import {SidebarExtension} from "./components/SidebarExtension";
-
-export class DialogExtension extends React.Component<{
-  sdk: DialogExtensionSDK;
-}> {
-  render() {
-    return (
-      <div style={{ margin: tokens.spacingM }}>
-        <Button
-          testId="close-dialog"
-          buttonType="muted"
-          onClick={() => {
-            this.props.sdk.close('data from modal dialog');
-          }}>
-          Close modal
-        </Button>
-      </div>
-    );
-  }
-}
+import {DialogExtension} from "./components/DialogExtension";
 
 init(sdk => {
-  if (sdk.location.is(locations.LOCATION_DIALOG)) {
-    render(<DialogExtension sdk={sdk as DialogExtensionSDK} />, document.getElementById('root'));
-  } else {
-    render(<SidebarExtension sdk={sdk as SidebarExtensionSDK} />, document.getElementById('root'));
-  }
+    if (sdk.location.is(locations.LOCATION_DIALOG)) {
+        render(<DialogExtension sdk={sdk as DialogExtensionSDK}/>, document.getElementById('root'));
+    } else {
+        render(<SidebarExtension sdk={sdk as SidebarExtensionSDK}/>, document.getElementById('root'));
+    }
 });
 
 /**

@@ -7,7 +7,8 @@ For the first version, the extension will be a sidebar extension that will simpl
 
 # Todo
  - [x] Create the sidebar extension
- - [ ] Notify the editor that they are currently in the read-only mode initially
+ - [ ] Add styling using emotion, f36 tokens, and f36 fcss 
+ - [x] Notify the editor that they are currently in the read-only mode initially
  - [ ] Create the "check out" functionality and persist across users
  - [ ] Create the "check in" functionality which will release the lock on the current entry
  - [ ] Create the "discard and check in" functionality which will release the lock on the current entry and discard any new changes made
