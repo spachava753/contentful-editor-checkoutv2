@@ -1,17 +1,20 @@
 import * as React from 'react';
 import {render} from 'react-dom';
-import {DialogExtensionSDK, init, locations, SidebarExtensionSDK} from 'contentful-ui-extensions-sdk';
+import {AppExtensionSDK, DialogExtensionSDK, init, locations, SidebarExtensionSDK} from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 import {SidebarExtension} from "./components/SidebarExtension";
 import {DialogExtension} from "./components/DialogExtension";
+import {Config} from "./components/ConfigScreen";
 
 init(sdk => {
+    let comp = <SidebarExtension sdk={sdk as SidebarExtensionSDK}/>;
     if (sdk.location.is(locations.LOCATION_DIALOG)) {
-        render(<DialogExtension sdk={sdk as DialogExtensionSDK}/>, document.getElementById('root'));
-    } else {
-        render(<SidebarExtension sdk={sdk as SidebarExtensionSDK}/>, document.getElementById('root'));
+        comp = <DialogExtension sdk={sdk as DialogExtensionSDK}/>;
+    } else if (sdk.location.is(locations.LOCATION_APP_CONFIG)) {
+        comp = <Config sdk={sdk as AppExtensionSDK}/>
     }
+    render(comp, document.getElementById('root'));
 });
 
 /**
