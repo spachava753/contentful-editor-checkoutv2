@@ -1,4 +1,5 @@
 export enum EntryState {
-    UNLOCKED = "Unlocked",
-    LOCKED = "Locked"
+    EDITABLE,
+    EDITING,
+    READ_ONLY
 }

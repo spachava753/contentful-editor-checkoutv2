@@ -18,7 +18,7 @@ let initialFieldStates: any = {};
 export function SidebarExtension(props: SidebarExtensionProps) {
     const {sdk} = props;
 
-    const [entryState, setEntryState] = useState(EntryState.UNLOCKED);
+    const [entryState, setEntryState] = useState(EntryState.EDITABLE);
 
     useEffect(() => {
         const detachFieldHandlers: Array<Function> = [];
@@ -33,7 +33,7 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                 console.log(`Old value is ${initialFieldStates[fieldsKey]}`);
                 console.log(`Entry state is ${entryState}`);
                 // if we are in a readonly state, don't save any changes
-                if (entryState == EntryState.UNLOCKED && !_.isEqual(value, initialFieldStates[fieldsKey])) {
+                if ((entryState == EntryState.EDITABLE || entryState == EntryState.READ_ONLY) && !_.isEqual(value, initialFieldStates[fieldsKey])) {
                     console.log(`Uh oh, resetting the field ${fieldsKey}!`);
                     // noinspection JSIgnoredPromiseFromCall
                     sdk.dialogs.openAlert({
@@ -58,13 +58,16 @@ export function SidebarExtension(props: SidebarExtensionProps) {
         sdk.window.startAutoResizer();
         // noinspection JSIgnoredPromiseFromCall
         const initExt = async () => {
-            let initialEntryState = EntryState.UNLOCKED;
+            let initialEntryState = EntryState.EDITABLE;
             try {
                 const response = await getEntryStatus(sdk.entry.getSys().id);
                 const data = await response.data;
 
-                if (!_.isEmpty(data) && data.entryState == 'Locked')
-                    initialEntryState = EntryState.LOCKED;
+                if (!_.isEmpty(data) && data.entryState == 'EDITING')
+                    if (data.userId == sdk.user.sys.id)
+                        initialEntryState = EntryState.EDITING;
+                    else
+                        initialEntryState = EntryState.READ_ONLY;
 
                 console.log(`The initial entry state is ${initialEntryState}`);
                 setEntryState(initialEntryState);
@@ -72,10 +75,11 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                 console.error(`There was an error getting entry state: ${e}`);
             }
 
-            if (initialEntryState == EntryState.UNLOCKED) {
+            if (initialEntryState == EntryState.READ_ONLY) {
                 sdk.dialogs.openAlert({
                     title: 'Warning!',
-                    message: "You are viewing the current entry in read only mode!",
+                    message: "You are viewing the current entry when someone else is editing it. " +
+                        "You can view the current entry only in read only mode!",
                     shouldCloseOnEscapePress: true,
                     shouldCloseOnOverlayClick: true
                 });
@@ -86,15 +90,16 @@ export function SidebarExtension(props: SidebarExtensionProps) {
     }, []);
 
     const buttonComp = [];
-    if (entryState == EntryState.UNLOCKED) {
+    if (entryState == EntryState.EDITABLE || entryState == EntryState.READ_ONLY) {
         buttonComp.push(<Button
             key={"checkout-btn"}
             testId="checkout-btn"
             buttonType="primary"
+            disabled={entryState == EntryState.READ_ONLY}
             isFullWidth={true}
             onClick={() => {
                 lockEntry(sdk.user.sys.id, sdk.entry.getSys().id)
-                    .then(() => setEntryState(EntryState.LOCKED));
+                    .then(() => setEntryState(EntryState.EDITING));
             }}>
             Checkout
         </Button>);
@@ -106,7 +111,7 @@ export function SidebarExtension(props: SidebarExtensionProps) {
             isFullWidth={true}
             onClick={() => {
                 unlockEntry(sdk.user.sys.id, sdk.entry.getSys().id)
-                    .then(() => setEntryState(EntryState.UNLOCKED));
+                    .then(() => setEntryState(EntryState.EDITABLE));
             }}>
             Checkin changes
         </Button>);
@@ -123,7 +128,7 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                 }
                 Promise.all(setFieldPromises)
                     .then(() => unlockEntry(sdk.user.sys.id, sdk.entry.getSys().id)
-                        .then(() => setEntryState(EntryState.UNLOCKED))
+                        .then(() => setEntryState(EntryState.EDITABLE))
                     );
             }}>
             Discard changes & Checkin
