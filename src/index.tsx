@@ -3,9 +3,7 @@ import {render} from 'react-dom';
 import {AppExtensionSDK, DialogExtensionSDK, init, locations, SidebarExtensionSDK} from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
-import {SidebarExtension} from "./components/SidebarExtension";
-import {DialogExtension} from "./components/DialogExtension";
-import {Config} from "./components/ConfigScreen";
+import {Config, DialogExtension, SidebarExtension} from "./components";
 
 init(sdk => {
     let comp = <SidebarExtension sdk={sdk as SidebarExtensionSDK}/>;
