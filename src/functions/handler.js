@@ -22,6 +22,10 @@ module.exports.changeState = (event, context, callback) => {
     .then(() => {
       callback(null, {
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*', // <-- Add your specific origin here
+          'Access-Control-Allow-Credentials': true,
+        },
         body: JSON.stringify({
           message: `Successfully submitted entry with id ${entryId}`,
           input: event,
@@ -32,6 +36,10 @@ module.exports.changeState = (event, context, callback) => {
       console.log(err);
       callback(null, {
         statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*', // <-- Add your specific origin here
+          'Access-Control-Allow-Credentials': true,
+        },
         body: JSON.stringify({
           message: `Unable to submit entry with id ${entryId}`,
           input: event,
@@ -58,6 +66,10 @@ module.exports.getState = (event, context, callback) => {
       console.log(`result returned was ${result}`);
       const response = {
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*', // <-- Add your specific origin here
+          'Access-Control-Allow-Credentials': true,
+        },
         body: JSON.stringify(result.Item),
       };
       callback(null, response);

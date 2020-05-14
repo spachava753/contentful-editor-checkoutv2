@@ -56,12 +56,14 @@ functions:
       - http:
           path: state/change
           method: post
+          cors: true
   getState:
     handler: handler.getState
     events:
       - http:
           path: state/get/{entryId}
           method: get
+          cors: true
 
 
     #    Define function environment variables here
