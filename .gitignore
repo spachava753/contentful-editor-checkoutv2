@@ -22,7 +22,8 @@ node_modules/
 .coverage
 
 # Build
-build/*
+# build/*
+build
 # !/build/index.html
 
 
