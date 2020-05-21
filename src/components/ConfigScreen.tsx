@@ -10,9 +10,8 @@ interface ConfigProps {
 export function Config(props: ConfigProps) {
     console.log("In Config screen");
 
-    const [table, setTable] = useState('');
-    const [accessId, setAccessId] = useState('');
-    const [secretAccessId, setSecretAccessId] = useState('');
+    const [setUrl, setSetUrl] = useState('');
+    const [getUrl, setGetUrl] = useState('');
     const {sdk} = props;
     const app = sdk.app;
 
@@ -21,26 +20,25 @@ export function Config(props: ConfigProps) {
             const p: any = await app.getParameters();
             console.log(`Fetched app params are ${p}`);
             if (!_.isEmpty(p)) {
-                setTable(p.table);
-                setTable(p.accessId);
-                setTable(p.secretAccessId);
+                setSetUrl(p.setUrl);
+                setGetUrl(p.getUrl);
             }
             console.log(`Setting app ready`);
-            app.setReady();
+            await app.setReady();
         }
 
-        getParams();
+        getParams().then();
     }, []);
 
     useEffect(() => {
-        const parameters = {table, accessId, secretAccessId}
+        const parameters = {setUrl, getUrl}
         console.log(`Saving app params as: ${JSON.stringify(parameters)}`);
         app.onConfigure(() => {
             return {
                 parameters: parameters
             }
         });
-    }, [table, accessId, secretAccessId]);
+    }, [setUrl, getUrl]);
 
 
     return (
@@ -54,48 +52,33 @@ export function Config(props: ConfigProps) {
             </Note>
             <TextField
                 required
-                name="tableInput"
-                id="tableInput"
-                labelText={"Table name"}
-                value={table}
+                name="API Gateway Endpoint"
+                id="setStateEndpointInput"
+                labelText={"API Gateway Endpoint for setting entry state"}
+                value={setUrl}
                 onChange={e => {
-                    setTable(e.currentTarget.value);
+                    setSetUrl(e.currentTarget.value);
                 }}
                 textInputProps={{
                     withCopyButton: true,
-                    placeholder: 'ContentfulDB',
+                    placeholder: "https://<some-endpoint>.execute-api.<some-region>.amazonaws.com/",
                 }}
-                helpText={"This is the table name in DynamoDB"}
+                helpText={"Editors: Ask your developers to install"}
             />
             <TextField
                 required
-                name="accessIdInput"
-                id="accessIdInput"
-                labelText={"Access Id"}
-                value={accessId}
+                name="API Gateway Endpoint"
+                id="getStateEndpointInput"
+                labelText={"API Gateway Endpoint for getting entry state"}
+                value={getUrl}
                 onChange={e => {
-                    setAccessId(e.currentTarget.value);
+                    setGetUrl(e.currentTarget.value);
                 }}
                 textInputProps={{
                     withCopyButton: true,
-                    placeholder: 'Placeholder text',
+                    placeholder: "https://<some-endpoint>.execute-api.<some-region>.amazonaws.com/",
                 }}
-                helpText={"This is the access key id"}
-            />
-            <TextField
-                required
-                name="secretKeyIdInput"
-                id="secretKeyIdInput"
-                labelText={"Secret Access Key Id"}
-                value={secretAccessId}
-                onChange={e => {
-                    setSecretAccessId(e.currentTarget.value);
-                }}
-                textInputProps={{
-                    withCopyButton: true,
-                    placeholder: 'Placeholder text',
-                }}
-                helpText={"This is the secret access key id"}
+                helpText={"Editors: Ask your developers to install"}
             />
         </Form>
     );

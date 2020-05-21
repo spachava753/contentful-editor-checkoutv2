@@ -23,10 +23,10 @@ service: targum-editor-lock
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage,'dev'}
   region: us-east-1
   environment:
-    TABLE: ContentfulTableDev
+    TABLE: ${self:custom.table.${self:provider.stage}}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -36,41 +36,31 @@ provider:
         - dynamodb:PutItem
       Resource: "*"
 
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
-# you can add packaging information here
-#package:
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
+custom:
+  stages:
+    - dev
+    - prod
+  table:
+    local: EditorCheckoutDev
+    dev: EditorCheckoutDev
+    prod: EditorCheckoutProd
 
 functions:
   changeState:
     handler: handler.changeState
     events:
       - http:
-          path: state/change
+          path: change
           method: post
           cors: true
   getState:
     handler: handler.getState
     events:
       - http:
-          path: state/get/{entryId}
+          path: get/{entryId}
           method: get
           cors: true
 
-
-    #    Define function environment variables here
-    environment:
-      variable2: value2
-
-# you can add CloudFormation resource templates here
 resources:
   Resources:
     CandidatesDynamoDbTable:

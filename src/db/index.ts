@@ -1,10 +1,20 @@
 import {EntryState} from "../util";
-import creds from "../aws-creds";
 import axios from "axios";
+
+let setUrl = "";
+let getUrl = "";
+
+export function setURL(url: string) {
+    setUrl = url;
+}
+
+export function getURL(url: string) {
+    getUrl = url;
+}
 
 function submitEntryState(userId: string, entryId: string, entryState: EntryState) {
     const state: string = EntryState[entryState];
-    return axios.post(creds.endpoint + 'change', {
+    return axios.post(setUrl, {
         entryId: entryId,
         userId: userId,
         entryState: state
@@ -20,5 +30,5 @@ export async function unlockEntry(userId: string, entryId: string) {
 }
 
 export async function getEntryStatus(entryId: string) {
-    return await axios.get(creds.endpoint + 'get/' + `${entryId}`);
+    return await axios.get(getUrl + `${entryId}`);
 }
