@@ -49,6 +49,11 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                         shouldCloseOnEscapePress: true,
                         shouldCloseOnOverlayClick: true
                     });
+
+                    if ((value as string).includes("untitled")) {
+                        initialFieldStates[field.id] = (value as string).substr(9);
+                    }
+
                     field.setValue(initialFieldStates[field.id]);
                 }
             }));
