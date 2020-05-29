@@ -22,6 +22,9 @@ service: targum-editor-lock
 
 provider:
   name: aws
+  apiKeys:
+    - name: ContentfulKey # let cloudformation name the key (recommended when setting api key value)
+      description: Api key to be used to secure endpoints # Optional
   runtime: nodejs12.x
   stage: ${opt:stage,'dev'}
   region: us-east-1
@@ -53,6 +56,7 @@ functions:
           path: change
           method: post
           cors: true
+          private: true
   getState:
     handler: handler.getState
     events:
@@ -60,6 +64,7 @@ functions:
           path: get/{entryId}
           method: get
           cors: true
+          private: true
 
 resources:
   Resources:
