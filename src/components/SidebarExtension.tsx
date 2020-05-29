@@ -51,7 +51,8 @@ export function SidebarExtension(props: SidebarExtensionProps) {
                         shouldCloseOnOverlayClick: true
                     });
 
-                    if ((value as string).includes("untitled")) {
+                    // special case to deal with slugs in newly created entries
+                    if (typeof value == "string" && (value as string).includes("untitled")) {
                         initialFieldStates[field.id] = (value as string).substr(9);
                     }
 

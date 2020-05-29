@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {AppExtensionSDK} from 'contentful-ui-extensions-sdk';
 import {Form, Heading, Note, TextField} from "@contentful/forma-36-react-components";
 import _ from "lodash";
+import {useAsync} from "react-use";
 
 interface ConfigProps {
     sdk: AppExtensionSDK
@@ -32,15 +33,36 @@ export function Config(props: ConfigProps) {
         getParams().then();
     }, []);
 
-    useEffect(() => {
+    useAsync(async () => {
         const parameters = {setUrl, getUrl, apiKey}
         console.log(`Saving app params as: ${JSON.stringify(parameters)}`);
-        app.onConfigure(() => {
+        await app.onConfigure(async () => {
+            const {items: contentTypes} = await sdk.space.getContentTypes();
+            // @ts-ignore
+            const contentTypeIds = contentTypes.map(ct => ct.sys.id);
+            console.log(`Content types to configure: ${contentTypeIds}`)
+            const editorInterface = contentTypeIds.reduce((acc, id) => {
+                // Insert the app as the first item in sidebars
+                // of all content types.
+                return {...acc, [id]: {sidebar: {position: 0}}};
+            }, {});
+            console.log(`Editor Interface: ${JSON.stringify(editorInterface)}`)
+
             return {
-                parameters: parameters
+                parameters: parameters,
+                targetState: {
+                    EditorInterface: editorInterface
+                }
             }
         });
     }, [setUrl, getUrl, apiKey]);
+
+
+    app.onConfigurationCompleted((err: any) => {
+        if (err) {
+            console.log(`There were errors installing: ${JSON.stringify(err)}`);
+        }
+    });
 
 
     return (
@@ -59,6 +81,7 @@ export function Config(props: ConfigProps) {
                 labelText={"API Gateway Endpoint for setting entry state"}
                 value={setUrl}
                 onChange={e => {
+                    // @ts-ignore
                     setSetUrl(e.currentTarget.value);
                 }}
                 textInputProps={{
@@ -74,6 +97,7 @@ export function Config(props: ConfigProps) {
                 labelText={"API Gateway Endpoint for getting entry state"}
                 value={getUrl}
                 onChange={e => {
+                    // @ts-ignore
                     setGetUrl(e.currentTarget.value);
                 }}
                 textInputProps={{
@@ -88,6 +112,7 @@ export function Config(props: ConfigProps) {
                 labelText={"API Key to use when contacting the endpoints, if there is any API key"}
                 value={apiKey}
                 onChange={e => {
+                    // @ts-ignore
                     setApiKey(e.currentTarget.value);
                 }}
                 textInputProps={{
