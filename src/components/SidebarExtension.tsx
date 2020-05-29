@@ -5,7 +5,7 @@ import {Button} from "@contentful/forma-36-react-components";
 import tokens from "@contentful/forma-36-tokens";
 import _ from "lodash";
 import {EntryState} from "../util";
-import {getEntryStatus, getURL, lockEntry, setURL, unlockEntry} from "../db";
+import {getEntryStatus, getURL, lockEntry, setApiKey, setURL, unlockEntry} from "../db";
 
 interface SidebarExtensionProps {
     sdk: SidebarExtensionSDK
@@ -21,10 +21,11 @@ export function SidebarExtension(props: SidebarExtensionProps) {
     const [entryState, setEntryState] = useState(EntryState.EDITABLE);
 
     useEffect(() => {
-        console.log(`App prarms: ${JSON.stringify(sdk.parameters.installation)}`);
+        console.log(`App params: ${JSON.stringify(sdk.parameters.installation)}`);
         const params = sdk.parameters.installation as any;
         setURL(params.setUrl);
         getURL(params.getUrl);
+        setApiKey(params.apiKey);
     });
 
     useEffect(() => {

@@ -43,7 +43,8 @@
         "contentful-ui-extensions-sdk": "3.13.0",
         "lodash": "^4.17.15",
         "react": "^16.8.6",
-        "react-dom": "^16.8.6"
+        "react-dom": "^16.8.6",
+        "react-use": "^15.1.0"
     },
     "browserslist": [
         "last 5 Chrome version",
