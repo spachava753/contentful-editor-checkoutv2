@@ -11,8 +11,7 @@ interface ConfigProps {
 export function Config(props: ConfigProps) {
     console.log("In Config screen");
 
-    const [setUrl, setSetUrl] = useState('');
-    const [getUrl, setGetUrl] = useState('');
+    const [url, setUrl] = useState('');
     const [apiKey, setApiKey] = useState('');
     const {sdk} = props;
     const app = sdk.app;
@@ -20,10 +19,9 @@ export function Config(props: ConfigProps) {
     useEffect(() => {
         async function getParams() {
             const p: any = await app.getParameters();
-            console.log(`Fetched app params are ${p}`);
+            console.log(`Fetched app params are ${JSON.stringify(p)}`);
             if (!_.isEmpty(p)) {
-                setSetUrl(p.setUrl);
-                setGetUrl(p.getUrl);
+                setUrl(p.url);
                 setApiKey(p.apiKey);
             }
             console.log(`Setting app ready`);
@@ -34,7 +32,7 @@ export function Config(props: ConfigProps) {
     }, []);
 
     useAsync(async () => {
-        const parameters = {setUrl, getUrl, apiKey}
+        const parameters = {url, apiKey};
         console.log(`Saving app params as: ${JSON.stringify(parameters)}`);
         await app.onConfigure(async () => {
             const {items: contentTypes} = await sdk.space.getContentTypes();
@@ -55,7 +53,7 @@ export function Config(props: ConfigProps) {
                 }
             }
         });
-    }, [setUrl, getUrl, apiKey]);
+    }, [url, apiKey]);
 
 
     app.onConfigurationCompleted((err: any) => {
@@ -77,28 +75,11 @@ export function Config(props: ConfigProps) {
             <TextField
                 required
                 name="API Gateway Endpoint"
-                id="setStateEndpointInput"
-                labelText={"API Gateway Endpoint for setting entry state"}
-                value={setUrl}
+                id="endpointInput"
+                labelText={"API Gateway Endpoint for changing entry state"}
+                value={url}
                 onChange={e => {
-                    // @ts-ignore
-                    setSetUrl(e.currentTarget.value);
-                }}
-                textInputProps={{
-                    withCopyButton: true,
-                    placeholder: "https://<some-endpoint>.execute-api.<some-region>.amazonaws.com/",
-                }}
-                helpText={"Editors: Ask your developers to install"}
-            />
-            <TextField
-                required
-                name="API Gateway Endpoint"
-                id="getStateEndpointInput"
-                labelText={"API Gateway Endpoint for getting entry state"}
-                value={getUrl}
-                onChange={e => {
-                    // @ts-ignore
-                    setGetUrl(e.currentTarget.value);
+                    setUrl((e.currentTarget as any).value);
                 }}
                 textInputProps={{
                     withCopyButton: true,
@@ -112,8 +93,7 @@ export function Config(props: ConfigProps) {
                 labelText={"API Key to use when contacting the endpoints, if there is any API key"}
                 value={apiKey}
                 onChange={e => {
-                    // @ts-ignore
-                    setApiKey(e.currentTarget.value);
+                    setApiKey((e.currentTarget as any).value);
                 }}
                 textInputProps={{
                     withCopyButton: false,

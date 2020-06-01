@@ -5,20 +5,18 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 module.exports.changeState = (event, context, callback) => {
   const requestBody = JSON.parse(event.body);
-  console.log(`event body: ${requestBody}`);
+  console.log(`event body: ${JSON.stringify(requestBody)}`);
   const entryId = requestBody.entryId;
-  const userId = requestBody.userId;
-  const entryState = requestBody.entryState;
 
   console.log(`validating body`);
-  if (typeof entryId !== 'string' || typeof userId !== 'string' || typeof entryState !== 'string') {
+  if (typeof entryId !== 'string') {
     console.error('Validation Failed');
     callback(new Error('Couldn\'t submit entry because of validation errors.'));
     return;
   }
   console.log(`validated body`);
 
-  submitEntryState(entryInfo(entryId, userId, entryState))
+  submitEntryState(requestBody)
     .then(() => {
       callback(null, {
         statusCode: 200,
@@ -98,13 +96,5 @@ const submitEntryState = (entry) => {
     Item: entry,
   };
   return dynamoDb.put(itemInfo).promise()
-    .then(res => entry);
-};
-
-const entryInfo = (entryId, userId, entryState) => {
-  return {
-    entryId: entryId,
-    userId: userId,
-    entryState: entryState
-  };
+    .then();
 };

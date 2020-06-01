@@ -53,7 +53,7 @@ functions:
     handler: handler.changeState
     events:
       - http:
-          path: change
+          path: entry
           method: post
           cors: true
           private: true
@@ -61,7 +61,7 @@ functions:
     handler: handler.getState
     events:
       - http:
-          path: get/{entryId}
+          path: entry/{entryId}
           method: get
           cors: true
           private: true

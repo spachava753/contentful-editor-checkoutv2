@@ -1,27 +1,20 @@
 import {EntryState} from "../util";
 import axios from "axios";
 
-let setUrl = "";
-let getUrl = "";
-let apiKey = "";
+let URL: string, apiKey: string;
 
 export function setURL(url: string) {
-    setUrl = url;
-}
-
-export function getURL(url: string) {
-    getUrl = url;
+    URL = url;
 }
 
 export function setApiKey(key: string) {
     apiKey = key;
 }
 
-function submitEntryState(userId: string, entryId: string, entryState: EntryState) {
+function submitEntryState(data: object, entryState: EntryState) {
     const state: string = EntryState[entryState];
-    return axios.post(setUrl, {
-        entryId: entryId,
-        userId: userId,
+    return axios.post(URL, {
+        ...data,
         entryState: state
     }, {
         headers: {
@@ -30,16 +23,16 @@ function submitEntryState(userId: string, entryId: string, entryState: EntryStat
     });
 }
 
-export async function lockEntry(userId: string, entryId: string) {
-    await submitEntryState(userId, entryId, EntryState.EDITING);
+export async function lockEntry(data: object) {
+    await submitEntryState(data, EntryState.EDITING);
 }
 
-export async function unlockEntry(userId: string, entryId: string) {
-    await submitEntryState(userId, entryId, EntryState.EDITABLE);
+export async function unlockEntry(data: object) {
+    await submitEntryState(data, EntryState.EDITABLE);
 }
 
 export async function getEntryStatus(entryId: string) {
-    return await axios.get(getUrl + `${entryId}`, {
+    return await axios.get(URL + `${entryId}`, {
         headers: {
             'x-api-key': apiKey
         }
