@@ -61,6 +61,14 @@ functions:
     handler: handler.getState
     events:
       - http:
+          path: entry/{entryId}/{details}
+          method: get
+          cors: true
+          private: true
+  getAllEntryInfo:
+    handler: handler.getAllInfo
+    events:
+      - http:
           path: entry/{entryId}
           method: get
           cors: true
@@ -75,9 +83,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: "entryId"
             AttributeType: "S"
+          - AttributeName: "details"
+            AttributeType: "S"
         KeySchema:
           - AttributeName: "entryId"
             KeyType: "HASH"
+          - AttributeName: "details"
+            KeyType: "RANGE"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
