@@ -73,26 +73,3 @@ functions:
           method: get
           cors: true
           private: true
-
-resources:
-  Resources:
-    CandidatesDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: "entryId"
-            AttributeType: "S"
-          - AttributeName: "details"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "entryId"
-            KeyType: "HASH"
-          - AttributeName: "details"
-            KeyType: "RANGE"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.TABLE}
