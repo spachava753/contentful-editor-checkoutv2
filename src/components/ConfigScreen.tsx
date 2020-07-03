@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import {AppExtensionSDK} from 'contentful-ui-extensions-sdk';
-import {Form, Heading, Note, TextField} from "@contentful/forma-36-react-components";
-import _ from "lodash";
-import {useAsync} from "react-use";
+import React, { useEffect, useState } from 'react';
+import { AppExtensionSDK } from 'contentful-ui-extensions-sdk';
+import { Form, Heading, Note, TextField } from '@contentful/forma-36-react-components';
+import _ from 'lodash-es';
+import { useAsync } from 'react-use';
 
 interface ConfigProps {
-    sdk: AppExtensionSDK
+    sdk: AppExtensionSDK;
 }
 
 export function Config(props: ConfigProps) {
-    console.log("In Config screen");
+    console.log('In Config screen');
 
     const [url, setUrl] = useState('');
     const [apiKey, setApiKey] = useState('');
-    const {sdk} = props;
+    const { sdk } = props;
     const app = sdk.app;
 
     useEffect(() => {
@@ -32,29 +32,28 @@ export function Config(props: ConfigProps) {
     }, []);
 
     useAsync(async () => {
-        const parameters = {url, apiKey};
+        const parameters = { url, apiKey };
         console.log(`Saving app params as: ${JSON.stringify(parameters)}`);
         await app.onConfigure(async () => {
-            const {items: contentTypes} = await sdk.space.getContentTypes();
+            const { items: contentTypes } = await sdk.space.getContentTypes();
             // @ts-ignore
             const contentTypeIds = contentTypes.map(ct => ct.sys.id);
-            console.log(`Content types to configure: ${contentTypeIds}`)
+            console.log(`Content types to configure: ${contentTypeIds}`);
             const editorInterface = contentTypeIds.reduce((acc, id) => {
                 // Insert the app as the first item in sidebars
                 // of all content types.
-                return {...acc, [id]: {sidebar: {position: 0}}};
+                return { ...acc, [id]: { sidebar: { position: 0 } } };
             }, {});
-            console.log(`Editor Interface: ${JSON.stringify(editorInterface)}`)
+            console.log(`Editor Interface: ${JSON.stringify(editorInterface)}`);
 
             return {
                 parameters: parameters,
                 targetState: {
                     EditorInterface: editorInterface
                 }
-            }
+            };
         });
     }, [url, apiKey]);
-
 
     app.onConfigurationCompleted((err: any) => {
         if (err) {
@@ -62,44 +61,42 @@ export function Config(props: ConfigProps) {
         }
     });
 
-
     return (
-        <Form style={{width: "500px", margin: "50px auto"}}>
+        <Form style={{ width: '500px', margin: '50px auto' }}>
             <Heading>Editor Checkout App</Heading>
             <Note noteType="primary" title="About the app">
-                The editor will ensure that concurrent editing is not possible.
-                However, we need to connect to a database to track an entry's state.
-                Enter the access key id and secret access id key of a user that can read and write items to a DynamoDB
-                table.
+                The editor will ensure that concurrent editing is not possible. However, we need to
+                connect to a database to track an entry's state. Enter the access key id and secret
+                access id key of a user that can read and write items to a DynamoDB table.
             </Note>
             <TextField
                 required
                 name="API Gateway Endpoint"
                 id="endpointInput"
-                labelText={"API Gateway Endpoint for changing entry state"}
+                labelText={'API Gateway Endpoint for changing entry state'}
                 value={url}
                 onChange={e => {
                     setUrl((e.currentTarget as any).value);
                 }}
                 textInputProps={{
                     withCopyButton: true,
-                    placeholder: "https://<some-endpoint>.execute-api.<some-region>.amazonaws.com/",
+                    placeholder: 'https://<some-endpoint>.execute-api.<some-region>.amazonaws.com/'
                 }}
-                helpText={"Editors: Ask your developers to install"}
+                helpText={'Editors: Ask your developers to install'}
             />
             <TextField
                 name="API Key"
                 id="apiKeyInput"
-                labelText={"API Key to use when contacting the endpoints, if there is any API key"}
+                labelText={'API Key to use when contacting the endpoints, if there is any API key'}
                 value={apiKey}
                 onChange={e => {
                     setApiKey((e.currentTarget as any).value);
                 }}
                 textInputProps={{
                     withCopyButton: false,
-                    placeholder: "gn@7N0zJ34q5s^M7%8mXbd6rRFRf%MuXfQLtZSCb",
+                    placeholder: 'gn@7N0zJ34q5s^M7%8mXbd6rRFRf%MuXfQLtZSCb'
                 }}
-                helpText={"Note: the placeholder key is not real"}
+                helpText={'Note: the placeholder key is not real'}
             />
         </Form>
     );
