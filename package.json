@@ -40,12 +40,14 @@
         "@contentful/forma-36-react-components": "^3.40.1",
         "@contentful/forma-36-tokens": "^0.5.3",
         "@types/lodash-es": "^4.17.3",
+        "@types/styled-components": "^5.1.0",
         "axios": "^0.19.2",
         "contentful-ui-extensions-sdk": "3.13.0",
         "lodash-es": "^4.17.15",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
-        "react-use": "^15.3.0"
+        "react-use": "^15.3.0",
+        "styled-components": "^5.1.1"
     },
     "browserslist": [
         "last 5 Chrome version",

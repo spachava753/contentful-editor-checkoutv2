@@ -36,3 +36,11 @@ export async function getEntryStatus(entryId: string) {
     }
   });
 }
+
+export async function getEntryData(entryId: string) {
+  return await axios.get(URL + `${entryId}`, {
+    headers: {
+      'x-api-key': apiKey
+    }
+  });
+}
